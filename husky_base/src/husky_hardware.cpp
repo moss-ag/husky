@@ -173,6 +173,8 @@ CallbackReturn HuskyHardware::on_init(const hardware_interface::HardwareInfo & i
     return CallbackReturn::ERROR;
   }
 
+  node_ = std::make_shared<rclcpp::Node>("husky_base");
+
   RCLCPP_INFO(rclcpp::get_logger(HW_NAME), "Name: %s", info_.name.c_str());
 
   RCLCPP_INFO(rclcpp::get_logger(HW_NAME), "Number of Joints %zu", info_.joints.size());
@@ -244,6 +246,8 @@ CallbackReturn HuskyHardware::on_init(const hardware_interface::HardwareInfo & i
     }
   }
 
+  initializeDiagnostics();
+
   return CallbackReturn::SUCCESS;
 }
 
@@ -304,6 +308,8 @@ hardware_interface::return_type HuskyHardware::read()
 {
   RCLCPP_DEBUG(rclcpp::get_logger(HW_NAME), "Reading from hardware");
 
+  updateDiagnostics();
+
   updateJointsFromHardware();
 
   RCLCPP_DEBUG(rclcpp::get_logger(HW_NAME), "Joints successfully read!");
@@ -320,6 +326,33 @@ hardware_interface::return_type HuskyHardware::write()
   RCLCPP_DEBUG(rclcpp::get_logger(HW_NAME), "Joints successfully written!");
 
   return hardware_interface::return_type::OK;
+}
+
+void HuskyHardware::initializeDiagnostics() {
+  horizon_legacy::Channel<clearpath::DataPlatformInfo>::Ptr info =
+      horizon_legacy::Channel<clearpath::DataPlatformInfo>::requestData(polling_timeout_);
+    std::ostringstream hardware_id_stream;
+    hardware_id_stream << "Husky " << info->getModel() << "-" << info->getSerial();
+    diagnostic_updater_ = std::make_shared<diagnostic_updater::Updater>(node_);
+    diagnostic_updater_->setHardwareID(hardware_id_stream.str());
+
+    system_status_task_= std::make_shared<HuskyHardwareDiagnosticTask<clearpath::DataSystemStatus>>(husky_status_msg_);
+    power_status_task_ = std::make_shared<HuskyHardwareDiagnosticTask<clearpath::DataPowerSystem>>(husky_status_msg_);
+    safety_status_task_ = std::make_shared<HuskyHardwareDiagnosticTask<clearpath::DataSafetySystemStatus>>(husky_status_msg_);
+    // TODO(shrijitsingh99): Get target control frequnecy parameter instead of setting to 10
+    software_status_task_ = std::make_shared<HuskySoftwareDiagnosticTask>(husky_status_msg_, 10);
+    
+    diagnostic_updater_->add(*system_status_task_);
+    diagnostic_updater_->add(*power_status_task_);
+    diagnostic_updater_->add(*safety_status_task_);
+    diagnostic_updater_->add(*software_status_task_);
+    diagnostic_publisher_ = node_-> create_publisher<husky_msgs::msg::HuskyStatus>("status", 10);
+}
+
+void HuskyHardware::updateDiagnostics() {
+  diagnostic_updater_->force_update();
+  husky_status_msg_.header.stamp = node_->now();
+  diagnostic_publisher_->publish(husky_status_msg_);
 }
 
 }  // namespace husky_base

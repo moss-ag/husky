@@ -15,6 +15,7 @@ find_package(ament_cmake REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
+find_package(diagnostic_updater REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -34,6 +35,7 @@ add_library(
   husky_hardware
   SHARED
   src/husky_hardware.cpp
+  src/husky_diagnostics.cpp
   src/horizon_legacy_wrapper.cpp
   src/horizon_legacy/crc.cpp
   src/horizon_legacy/Logger.cpp
@@ -54,7 +56,9 @@ target_include_directories(
 
 ament_target_dependencies(
   husky_hardware
+  diagnostic_updater
   hardware_interface
+  husky_msgs
   pluginlib
   rclcpp
 )
@@ -86,7 +90,9 @@ ament_export_libraries(
   husky_hardware
 )
 ament_export_dependencies(
+  diagnostic_updater
   hardware_interface
+  husky_msgs
   pluginlib
   rclcpp
 )

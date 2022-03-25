@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "husky_base/husky_diagnostics.h"
+#include "diagnostic_updater/diagnostic_updater.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
@@ -49,6 +51,8 @@ public:
   HARDWARE_INTERFACE_PUBLIC
   hardware_interface::return_type write() override;
 
+  void updateDiagnostics();
+
 private:
   void resetTravelOffset();
   double linearToAngular(const double &travel) const;
@@ -56,8 +60,10 @@ private:
   void writeCommandsToHardware();
   void limitDifferentialSpeed(double &diff_speed_left, double &diff_speed_right);
   void updateJointsFromHardware();
+  void initializeDiagnostics();
 
   // ROS Parameters
+  rclcpp::Node::SharedPtr node_;
   std::string serial_port_;
   double polling_timeout_;
   double wheel_diameter_, max_accel_, max_speed_;
@@ -65,6 +71,15 @@ private:
   // Store the command for the robot
   std::vector<double> hw_commands_;
   std::vector<double> hw_states_position_, hw_states_position_offset_, hw_states_velocity_;
+
+  // Diagnostics
+  rclcpp::Publisher<husky_msgs::msg::HuskyStatus>::SharedPtr diagnostic_publisher_;
+  husky_msgs::msg::HuskyStatus husky_status_msg_;
+  std::shared_ptr<diagnostic_updater::Updater> diagnostic_updater_;
+  HuskyHardwareDiagnosticTask<clearpath::DataSystemStatus>::SharedPtr system_status_task_;
+  HuskyHardwareDiagnosticTask<clearpath::DataPowerSystem>::SharedPtr power_status_task_;
+  HuskyHardwareDiagnosticTask<clearpath::DataSafetySystemStatus>::SharedPtr safety_status_task_;
+  HuskySoftwareDiagnosticTask::SharedPtr software_status_task_;
 };
 
 }  // namespace husky_base
