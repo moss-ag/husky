@@ -115,7 +115,7 @@
 
     <xacro:if value="$(optenv HUSKY_TOP_PLATE_ENABLED true)">
       <!-- Spawn the top plate -->
-      <xacro:if value="$(optenv HUSKY_LARGE_TOP_PLATE false)">
+      <xacro:if value="$(optenv HUSKY_LARGE_TOP_PLATE true)">
         <link name="top_plate_link">
           <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -150,7 +150,7 @@
         </joint>
       </xacro:if>
 
-      <xacro:unless value="$(optenv HUSKY_LARGE_TOP_PLATE false)">
+      <xacro:unless value="$(optenv HUSKY_LARGE_TOP_PLATE true)">
         <link name="top_plate_link">
           <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
