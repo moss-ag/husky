@@ -304,7 +304,7 @@ CallbackReturn HuskyHardware::on_deactivate(const rclcpp_lifecycle::State & /*pr
   return CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type HuskyHardware::read()
+hardware_interface::return_type HuskyHardware::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   RCLCPP_DEBUG(rclcpp::get_logger(HW_NAME), "Reading from hardware");
 
@@ -317,7 +317,7 @@ hardware_interface::return_type HuskyHardware::read()
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type HuskyHardware::write()
+hardware_interface::return_type HuskyHardware::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   RCLCPP_DEBUG(rclcpp::get_logger(HW_NAME), "Writing to hardware");
 

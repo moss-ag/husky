@@ -24,6 +24,7 @@ using namespace std::chrono_literals;
 
 namespace husky_base
 {
+using CallbackReturn = hardware_interface::CallbackReturn;
 
 class HuskyHardware : public hardware_interface::SystemInterface
 {
@@ -46,10 +47,10 @@ public:
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
   HARDWARE_INTERFACE_PUBLIC
-  hardware_interface::return_type read() override;
+  hardware_interface::return_type read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
 
   HARDWARE_INTERFACE_PUBLIC
-  hardware_interface::return_type write() override;
+  hardware_interface::return_type write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
 
   void updateDiagnostics();
 
