@@ -25,9 +25,7 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
 
     config_husky_velocity_controller = PathJoinSubstitution(
-        [FindPackageShare("husky_control"),
-        "config",
-        "control.yaml"],
+        [FindPackageShare("husky_control"), "config", "control.yaml"],
     )
 
     node_robot_state_publisher = Node(
@@ -41,15 +39,12 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, config_husky_velocity_controller],
-        output={
-            "stdout": "screen",
-            "stderr": "screen",
-        },
+        output="screen",
     )
 
     spawn_controller = Node(
         package="controller_manager",
-        executable="spawner.py",
+        executable="spawner",
         arguments=["joint_state_broadcaster"],
         output="screen",
     )
