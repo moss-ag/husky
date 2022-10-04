@@ -1,5 +1,7 @@
 from launch import LaunchDescription
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -42,24 +44,37 @@ def generate_launch_description():
         output="screen",
     )
 
-    spawn_controller = Node(
+    spawn_joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster"],
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
         output="screen",
     )
 
     spawn_husky_velocity_controller = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["husky_velocity_controller"],
+        arguments=["husky_velocity_controller", "-c", "/controller_manager"],
         output="screen",
+    )
+
+    delay_husky_velocity_controller_after_spawn_joint_state_broadcaster = (
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_joint_state_broadcaster,
+                on_exit=[spawn_husky_velocity_controller],
+            )
+        )
     )
 
     ld = LaunchDescription()
     ld.add_action(node_robot_state_publisher)
     ld.add_action(node_controller_manager)
-    ld.add_action(spawn_controller)
-    ld.add_action(spawn_husky_velocity_controller)
+    ld.add_action(spawn_joint_state_broadcaster)
+    ld.add_action(delay_husky_velocity_controller_after_spawn_joint_state_broadcaster)
 
     return ld
