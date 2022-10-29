@@ -93,12 +93,21 @@
     <!-- Can be modified with environment variables in /etc/ros/setup.bash -->
     <link name="${prefix}imu_link"/>
     <joint name="${prefix}imu_joint" type="fixed">
-      <origin xyz="$(optenv HUSKY_IMU_XYZ 0.19 0 0.149)" rpy="$(optenv HUSKY_IMU_RPY 0 -1.5708 3.1416)" />
+      <origin xyz="$(optenv HUSKY_IMU_XYZ 0.624 0.175 0.040)" rpy="$(optenv HUSKY_IMU_RPY 0 -1.5708 3.1416)" />
       <parent link="${prefix}base_link" />
       <child link="${prefix}imu_link" />
     </joint>
     <gazebo reference="${prefix}imu_link">
     </gazebo>
+
+    <xacro:if value="$(arg not is_sim)">
+      <link name="${prefix}lidar_link"/>
+      <joint name="${prefix}lidar_joint" type="fixed">
+        <origin xyz="$(optenv HUSKY_LIDAR_XYZ 0.6055 0 0.285)" rpy="$(optenv HUSKY_LIDAR_RPY 0 0 0)" />
+        <parent link="${prefix}base_link" />
+        <child link="${prefix}lidar_link" />
+      </joint>
+    </xacro>
 
     <!-- Husky wheel macros -->
     <xacro:husky_wheel wheel_prefix="${prefix}front_left">

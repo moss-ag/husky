@@ -9,16 +9,16 @@
 
   <xacro:include filename="$(find husky_description)/urdf/husky_macro.urdf.xacro" />
 
-  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-  <xacro:VLP-16 parent="base_link" name="lidar_link" topic="/points" organize_cloud="true" hz="10" lasers="32" samples="2048" min_range="0.3" collision_range="0.3" gpu="true">
-    <origin xyz="0.338 0 0.834" rpy="0 0 0" />
-  </xacro:VLP-16>
-
   <!-- Load husky description -->
   <xacro:husky prefix="$(arg prefix)" />
 
 
   <xacro:if value="$(arg is_sim)">
+
+    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+    <xacro:VLP-16 parent="base_link" name="lidar_link" topic="/points" organize_cloud="true" hz="10" lasers="32" samples="2048" min_range="0.3" collision_range="0.3" gpu="true">
+      <origin xyz="0.338 0 0.834" rpy="0 0 0" />
+    </xacro:VLP-16>
 
     <gazebo>
       <plugin name="$(arg prefix)gazebo_ros2_control" filename="libgazebo_ros2_control.so">
