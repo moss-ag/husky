@@ -100,14 +100,14 @@
     <gazebo reference="${prefix}imu_link">
     </gazebo>
 
-    <xacro:if value="$(arg not is_sim)">
+    <xacro:unless value="$(arg is_sim)">
       <link name="${prefix}lidar_link"/>
       <joint name="${prefix}lidar_joint" type="fixed">
         <origin xyz="$(optenv HUSKY_LIDAR_XYZ 0.6055 0 0.285)" rpy="$(optenv HUSKY_LIDAR_RPY 0 0 0)" />
         <parent link="${prefix}base_link" />
         <child link="${prefix}lidar_link" />
       </joint>
-    </xacro>
+    </xacro:unless>
 
     <!-- Husky wheel macros -->
     <xacro:husky_wheel wheel_prefix="${prefix}front_left">
