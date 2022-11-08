@@ -31,7 +31,7 @@ def generate_launch_description():
             package='twist_mux',
             executable='twist_mux',
             output='screen',
-            remappings={('/cmd_vel_out', '/husky_velocity_controller/cmd_vel_unstamped')},
+            remappings={('/cmd_vel_out', '/twist_mux/cmd_vel')},
             parameters=[
                 PathJoinSubstitution(
                     [FindPackageShare("husky_control"), "config", "twist_mux.yaml"]
