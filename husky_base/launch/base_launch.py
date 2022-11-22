@@ -42,6 +42,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[robot_description, config_husky_velocity_controller],
         output="screen",
+        respawn=True
     )
 
     spawn_joint_state_broadcaster = Node(
