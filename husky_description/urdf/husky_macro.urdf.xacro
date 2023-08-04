@@ -94,11 +94,9 @@
     <link name="${prefix}imu_link"/>
     <joint name="${prefix}imu_joint" type="fixed">
       <origin xyz="$(optenv HUSKY_IMU_XYZ 0.624 0.175 0.040)" rpy="$(optenv HUSKY_IMU_RPY 0 -1.5708 3.1416)" />
-      <parent link="${prefix}base_link" />
+      <parent link="${prefix}lidar_link" />
       <child link="${prefix}imu_link" />
     </joint>
-    <gazebo reference="${prefix}imu_link">
-    </gazebo>
 
     <xacro:unless value="$(arg is_sim)">
       <link name="${prefix}lidar_link"/>
